@@ -321,6 +321,10 @@ spec:
           securityContext: {{- toYaml .Values.statefulset.sideCars.controllers.securityContext | nindent 12 }}
           {{- end }}
       {{- end }}
+  {{- end }}
+{{- if dig "sideCars" "extraSideCars" false .Values.statefulset -}}
+  {{ tpl .Values.statefulset.initContainers.extraInitContainers . | nindent 8 }}
+{{- end }}
       volumes: {{ include "common-volumes" . | nindent 8 }}
       {{- if dig "extraVolumes" false .Values.statefulset -}}
         {{ tpl .Values.statefulset.extraVolumes . | nindent 8 }}
