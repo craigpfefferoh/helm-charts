@@ -20,6 +20,10 @@ limitations under the License.
 {{ $secretConfig := dict }}
 {{ if and .Values.console.enabled (not .Values.console.secret.create) }}
 {{ $licenseKey := ( include "enterprise-license" .  ) }}
+# originally this was not printing a secret, so we gather in which case to print
+# for now only if we have a license do we print, however, this may be an issue for some
+# since if we do include a license we MUST also print all secret items.
+{{ $doPrintSecret := ( not (empty $licenseKey )) }}
 {{ $secretConfig = ( dict
   "create" true
   "enterprise" ( dict "license" $licenseKey)
@@ -33,8 +37,10 @@ limitations under the License.
 
 {{ $console := deepCopy .Subcharts.console }}
 {{ $console = merge $config $console }}
+  {{ if $doPrintSecret }}
 ---
 {{ include (print .Subcharts.console.Template.BasePath "/secret.yaml") $console }}
+  {{ end }}
 {{ end }}
 
 {{ $configmap := dict }}
